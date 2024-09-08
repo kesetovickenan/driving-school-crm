@@ -6,6 +6,7 @@ module.exports = {
       colors: {
         bgwhite: "#F4F3F2",
       },
+      plugins: [require("tailwindcss-font-inter")],
     },
   },
   plugins: [],

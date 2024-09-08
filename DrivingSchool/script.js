@@ -2,40 +2,42 @@ let allCandidates = [];
 const approvedCandidates = [];
 const unapprovedCandidates = [];
 
-document.querySelector("#check-btn").addEventListener("click", function () {
-  let fullName = document.querySelector("#fullName").value;
-  let age = document.querySelector("#age").value;
-  let gender = document.querySelector("#gender").value;
-  let successMessage = document.querySelector(".success-message");
-  let errorMessage = document.querySelector(".error-message");
-  let candidates = document.querySelector(".candidates");
-  let totalNumber = document.querySelector(".total-number");
-  let totalApproved = document.querySelector(".total-approved");
-  let totalUnapproved = document.querySelector(".total-unapproved");
+document
+  .querySelector("#check-btn")
+  .addEventListener("click", function async() {
+    let fullName = document.querySelector("#fullName").value;
+    let age = document.querySelector("#age").value;
+    let gender = document.querySelector("#gender").value;
+    let successMessage = document.querySelector(".success-message");
+    let errorMessage = document.querySelector(".error-message");
+    let candidates = document.querySelector(".candidates");
+    let totalNumber = document.querySelector(".total-number");
+    let totalApproved = document.querySelector(".total-approved");
+    let totalUnapproved = document.querySelector(".total-unapproved");
 
-  if (allFieldsEntered(fullName, age, gender)) {
-    addCandidate(fullName, age, gender, candidates);
-    if (age >= 18) {
-      approvedCandidates.push({ fullName, age, gender });
-      successMessage.textContent = "Driver is eligible to take the test 🎉";
-      errorMessage.textContent = "";
-      fullName.textContent = "";
-      age.textContent = "";
-      gender.textContent = "";
+    if (allFieldsEntered(fullName, age, gender)) {
+      addCandidate(fullName, age, gender, candidates);
+      if (age >= 18) {
+        approvedCandidates.push({ fullName, age, gender });
+        successMessage.textContent = "Driver is eligible to take the test 🎉";
+        errorMessage.textContent = "";
+        fullName.textContent = "";
+        age.textContent = "";
+        gender.textContent = "";
+      } else {
+        unapprovedCandidates.push({ fullName, age, gender });
+        successMessage.textContent = "";
+        errorMessage.textContent = "The age requirement is 18 ⛔";
+      }
     } else {
-      unapprovedCandidates.push({ fullName, age, gender });
       successMessage.textContent = "";
-      errorMessage.textContent = "The age requirement is 18 ⛔";
+      errorMessage.textContent = "Not all fields are entered ⛔";
     }
-  } else {
-    successMessage.textContent = "";
-    errorMessage.textContent = "Not all fields are entered ⛔";
-  }
 
-  totalNumber.textContent = `Number of candidates: ${allCandidates.length}`;
-  totalApproved.textContent = `Accepted candidates: ${approvedCandidates.length}`;
-  totalUnapproved.textContent = `Rejected candidates: ${unapprovedCandidates.length}`;
-});
+    totalNumber.textContent = `Number of candidates: ${allCandidates.length}`;
+    totalApproved.textContent = `Accepted candidates: ${approvedCandidates.length}`;
+    totalUnapproved.textContent = `Rejected candidates: ${unapprovedCandidates.length}`;
+  });
 
 function allFieldsEntered(fullName, age, gender) {
   return fullName !== "" && age !== "" && gender !== "";
@@ -136,12 +138,44 @@ function addCandidate(fullName, age, gender, candidatesTableBody) {
   }
 }
 
+// async function fetchData() {
+//   try {
+//     const response = await fetch("https://dummyjson.com/users");
+//     const data = await response.json();
+//     console.log(data, "Fetched and displayed candidates");
+//   } catch (error) {
+//     console.error("Error fetching data:", error);
+//   }
+// }
+
+// document.querySelector("#load-candidates").addEventListener("click", fetchData);
+
 async function fetchData() {
   try {
     const response = await fetch("https://dummyjson.com/users");
     const data = await response.json();
-    console.log(data, "Dohvatio sam");
+    const candidatesTableBody = document.querySelector("tbody.candidates");
+
+    data.users.forEach((user) => {
+      const fullName = `${user.firstName} ${user.lastName}`;
+      const age = user.age;
+      const gender = user.gender;
+
+      addCandidate(fullName, age, gender, candidatesTableBody);
+    });
+
+    console.log(data, "Fetched and displayed candidates");
   } catch (error) {
     console.error("Error fetching data:", error);
   }
 }
+
+function updateCounters() {
+  const totalCandidates = allCandidates.length;
+
+  document.querySelector(
+    ".total-number"
+  ).textContent = `Number of candidates: ${totalCandidates}`;
+}
+
+document.querySelector("#load-candidates").addEventListener("click", fetchData);
